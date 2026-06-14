@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
   :root{
     --teal:#219493; --teal-dark:#187573; --teal-light:#e6f5f4;
@@ -400,30 +399,6 @@
           <div class="card stat-card"><div class="stat-icon yellow">⚠</div><div class="stat-label">Telat Hari Ini</div><div class="stat-value" id="adTelat">—</div></div>
           <div class="card stat-card"><div class="stat-icon red">✗</div><div class="stat-label">Belum Absen</div><div class="stat-value" id="adBelum">—</div></div>
         </div>
-
-        <div class="grid grid-3" style="margin-bottom:20px;">
-          <div class="card">
-            <div class="section-title">Rekap Absensi</div>
-            <div style="position:relative;height:220px;"><canvas id="chartRekapAbsensi"></canvas></div>
-            <div id="chartRekapAbsensiEmpty" class="empty-state" style="display:none;">Belum ada data absensi bulan ini.</div>
-          </div>
-          <div class="card">
-            <div class="section-title">Tren Keterlambatan (7 Hari)</div>
-            <div style="position:relative;height:220px;"><canvas id="chartTrenTelat"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="section-title">Status Cuti</div>
-            <div style="position:relative;height:220px;"><canvas id="chartStatusCuti"></canvas></div>
-            <div id="chartStatusCutiEmpty" class="empty-state" style="display:none;">Belum ada pengajuan cuti bulan ini.</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-bottom:20px;">
-          <div class="section-title">Kehadiran per Departemen</div>
-          <div style="position:relative;height:280px;"><canvas id="chartKehadiranDept"></canvas></div>
-          <div id="chartKehadiranDeptEmpty" class="empty-state" style="display:none;">Belum ada data departemen.</div>
-        </div>
-
         <div class="card">
           <div class="section-title">Kehadiran Hari Ini</div>
           <table><thead><tr><th>Nama</th><th>Departemen</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Lokasi</th></tr></thead>
@@ -698,12 +673,6 @@ let selfieDataCheckin  = null; // { base64, mimeType, previewUrl } untuk check-i
 let selfieDataCheckout = null; // untuk check-out
 let selfieUploadedIn   = null; // { fileUrl, previewUrl } sudah diupload
 let selfieUploadedOut  = null;
-
-/* Chart.js instances (admin dashboard) */
-let chartRekapAbsensi   = null;
-let chartTrenTelat      = null;
-let chartStatusCuti     = null;
-let chartKehadiranDept  = null;
 
 /* ============================================================
    HELPERS
@@ -1570,8 +1539,6 @@ async function loadAdminDashboard(){
     document.getElementById("adTelat").textContent    = d.todayTelat;
     document.getElementById("adBelum").textContent    = d.todayBelum;
 
-    if(d.charts) renderAdminCharts(d.charts);
-
     const body = document.getElementById("adminTodayBody");
     if(d.todayList && d.todayList.length){
       body.innerHTML = d.todayList.map(r=>{
@@ -1601,169 +1568,6 @@ async function loadAdminDashboard(){
       body.innerHTML='<tr><td colspan="6" class="empty-state">Belum ada data kehadiran hari ini.</td></tr>';
     }
   }catch(e){}
-}
-
-/* ── Chart palette (selaras dengan tema) ── */
-const CHART_COLORS = {
-  teal:   "#219493",
-  tealD:  "#187573",
-  tealL:  "#7fcac9",
-  green:  "#1e8e3e",
-  yellow: "#b8860b",
-  red:    "#c0392b",
-  gray:   "#c4c4c8"
-};
-
-function _destroyChart(ref){
-  if(ref) ref.destroy();
-  return null;
-}
-
-function renderAdminCharts(charts){
-  renderChartRekapAbsensi(charts.recap);
-  renderChartTrenTelat(charts.lateTrend);
-  renderChartStatusCuti(charts.leaveStatus);
-  renderChartKehadiranDept(charts.deptAttendance);
-}
-
-/* 1) Rekap Absensi — Donut */
-function renderChartRekapAbsensi(recap){
-  const canvas = document.getElementById("chartRekapAbsensi");
-  const empty  = document.getElementById("chartRekapAbsensiEmpty");
-  const total  = (recap.hadir||0) + (recap.telat||0) + (recap.alpha||0) + (recap.izin||0);
-
-  chartRekapAbsensi = _destroyChart(chartRekapAbsensi);
-  if(total === 0){
-    canvas.style.display = "none";
-    empty.style.display  = "block";
-    return;
-  }
-  canvas.style.display = "block";
-  empty.style.display  = "none";
-
-  chartRekapAbsensi = new Chart(canvas, {
-    type: "doughnut",
-    data: {
-      labels: ["Hadir","Telat","Alpha","Izin/Cuti"],
-      datasets: [{
-        data: [recap.hadir, recap.telat, recap.alpha, recap.izin],
-        backgroundColor: [CHART_COLORS.green, CHART_COLORS.yellow, CHART_COLORS.red, CHART_COLORS.teal],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      cutout: "62%",
-      plugins: { legend: { position: "bottom", labels:{ boxWidth:12, font:{ size:12 } } } }
-    }
-  });
-}
-
-/* 2) Tren Keterlambatan — Bar (7 hari terakhir) */
-function renderChartTrenTelat(trend){
-  const canvas = document.getElementById("chartTrenTelat");
-  chartTrenTelat = _destroyChart(chartTrenTelat);
-
-  chartTrenTelat = new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels: trend.labels,
-      datasets: [{
-        label: "Jumlah Telat",
-        data: trend.data,
-        backgroundColor: CHART_COLORS.yellow,
-        borderRadius: 6,
-        maxBarThickness: 36
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display:false } },
-      scales: {
-        y: { beginAtZero:true, ticks:{ stepSize:1, precision:0 }, grid:{ color:"#f1f1f3" } },
-        x: { grid:{ display:false } }
-      }
-    }
-  });
-}
-
-/* 3) Status Cuti — Donut */
-function renderChartStatusCuti(leaveStatus){
-  const canvas = document.getElementById("chartStatusCuti");
-  const empty  = document.getElementById("chartStatusCutiEmpty");
-  const total  = (leaveStatus.pending||0) + (leaveStatus.approved||0) + (leaveStatus.rejected||0);
-
-  chartStatusCuti = _destroyChart(chartStatusCuti);
-  if(total === 0){
-    canvas.style.display = "none";
-    empty.style.display  = "block";
-    return;
-  }
-  canvas.style.display = "block";
-  empty.style.display  = "none";
-
-  chartStatusCuti = new Chart(canvas, {
-    type: "doughnut",
-    data: {
-      labels: ["Pending","Disetujui","Ditolak"],
-      datasets: [{
-        data: [leaveStatus.pending, leaveStatus.approved, leaveStatus.rejected],
-        backgroundColor: [CHART_COLORS.yellow, CHART_COLORS.green, CHART_COLORS.red],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      cutout: "62%",
-      plugins: { legend: { position: "bottom", labels:{ boxWidth:12, font:{ size:12 } } } }
-    }
-  });
-}
-
-/* Admin Chart: Kehadiran per Departemen — Bar */
-function renderChartKehadiranDept(dept){
-  const canvas = document.getElementById("chartKehadiranDept");
-  const empty  = document.getElementById("chartKehadiranDeptEmpty");
-
-  chartKehadiranDept = _destroyChart(chartKehadiranDept);
-  if(!dept.labels || !dept.labels.length){
-    canvas.style.display = "none";
-    empty.style.display  = "block";
-    return;
-  }
-  canvas.style.display = "block";
-  empty.style.display  = "none";
-
-  chartKehadiranDept = new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels: dept.labels,
-      datasets: [
-        {
-          label: "Hadir",
-          data: dept.hadir,
-          backgroundColor: CHART_COLORS.teal,
-          borderRadius: 6,
-          maxBarThickness: 40
-        },
-        {
-          label: "Total Karyawan",
-          data: dept.total,
-          backgroundColor: CHART_COLORS.gray,
-          borderRadius: 6,
-          maxBarThickness: 40
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: "bottom", labels:{ boxWidth:12, font:{ size:12 } } } },
-      scales: {
-        y: { beginAtZero:true, ticks:{ stepSize:1, precision:0 }, grid:{ color:"#f1f1f3" } },
-        x: { grid:{ display:false } }
-      }
-    }
-  });
 }
 
 /* ============================================================
