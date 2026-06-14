@@ -27,7 +27,7 @@
   #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
     background:radial-gradient(circle at 15% 20%,rgba(33,148,147,.10),transparent 40%),
                radial-gradient(circle at 85% 80%,rgba(33,148,147,.08),transparent 40%),var(--bg);}
-  .login-card{width:100%;max-width:400px;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);
+  .login-card{width:100%;max-width:400px;background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
     border:1px solid rgba(255,255,255,.6);border-radius:var(--radius-lg);box-shadow:var(--shadow-modal);
     padding:40px 36px;text-align:center;animation:fadeUp .5s ease;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -47,8 +47,8 @@
 
   /* APP */
   #appScreen{display:none;min-height:100vh;}
-  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.75);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:14px 28px;}
-  .topbar-left{display:flex;align-items:center;gap:12px;}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:14px 28px;flex-wrap:wrap;gap:10px;}
+  .topbar-left{display:flex;align-items:center;gap:12px;min-width:0;overflow:hidden;}
   .topbar-left .logo-mark{width:36px;height:36px;border-radius:10px;font-size:13px;margin:0;}
   .topbar-left .brand{font-weight:700;font-size:16px;letter-spacing:-.01em;}
   .topbar-left .brand span{color:var(--teal);}
@@ -60,7 +60,7 @@
   .user-chip .uname{font-size:13px;font-weight:600;} .user-chip .urole{font-size:11px;color:var(--ink-soft);}
   .layout{display:flex;max-width:1280px;margin:0 auto;}
   .sidebar{width:230px;flex-shrink:0;padding:24px 14px;position:sticky;top:65px;height:calc(100vh - 65px);}
-  .nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--radius-sm);color:var(--ink-soft);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;margin-bottom:4px;border:1px solid transparent;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:44px;border-radius:var(--radius-sm);color:var(--ink-soft);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;margin-bottom:4px;border:1px solid transparent;}
   .nav-item:hover{background:#fff;color:var(--ink);} .nav-item.active{background:var(--teal-light);color:var(--teal-dark);font-weight:600;}
   .nav-item .icon{width:20px;text-align:center;font-size:16px;}
   .nav-item.logout{color:var(--red);margin-top:20px;} .nav-item.logout:hover{background:var(--red-light);}
@@ -75,6 +75,7 @@
   .grid{display:grid;gap:16px;}
   .grid-4{grid-template-columns:repeat(4,1fr);} .grid-3{grid-template-columns:repeat(3,1fr);} .grid-2{grid-template-columns:repeat(2,1fr);}
   @media(max-width:1000px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-3{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:768px){.grid-2{grid-template-columns:1fr;}}
   @media(max-width:640px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr;}}
 
   /* CARDS */
@@ -114,7 +115,8 @@
   .gps-map-link:hover{text-decoration:underline;}
 
   /* TABLE */
-  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px;}
   thead th{text-align:left;padding:10px 12px;color:var(--ink-soft);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line);}
   tbody td{padding:12px 12px;border-bottom:1px solid #f1f1f3;}
   tbody tr:last-child td{border-bottom:none;}
@@ -151,7 +153,7 @@
   #toast.error{background:var(--red);} #toast.success{background:var(--teal-dark);}
 
   /* MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
   .modal-overlay.open{display:flex;}
   .modal{background:#fff;border-radius:var(--radius-lg);padding:28px;width:100%;max-width:420px;box-shadow:var(--shadow-modal);animation:fadeUp .25s ease;}
   .modal h3{font-size:17px;font-weight:700;margin-bottom:16px;}
@@ -180,7 +182,7 @@
 
   /* SELFIE */
   .selfie-panel{margin-top:16px;max-width:420px;margin-left:auto;margin-right:auto;}
-  .selfie-preview{width:100%;max-width:260px;border-radius:14px;border:2px solid var(--line);display:block;margin:10px auto;object-fit:cover;aspect-ratio:4/3;}
+  .selfie-preview{width:100%;max-width:260px;height:195px;border-radius:14px;border:2px solid var(--line);display:block;margin:10px auto;object-fit:cover;aspect-ratio:4/3;}
   .selfie-preview.hidden{display:none;}
   .selfie-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;}
   .selfie-badge.ok{background:var(--green-light);color:var(--green);}
@@ -191,12 +193,58 @@
   .att-type-badge.office{background:var(--teal-light);color:var(--teal-dark);}
   .att-type-badge.sales{background:#fff0e6;color:#b85c00;}
 
-  /* MOBILE */
+  /* TABLET (768px and below) */
+  @media(max-width:768px){
+    .topbar{padding:12px 16px;}
+    .topbar-left .brand{font-size:14px;}
+    .main{padding:24px 20px 50px;}
+    .page-title{font-size:22px;}
+    .attendance-clock .big-time{font-size:38px;}
+    .modal{padding:22px;}
+  }
+
+  /* MOBILE (880px and below) */
   @media(max-width:880px){
     .layout{flex-direction:column;}
-    .sidebar{width:100%;height:auto;position:static;display:flex;overflow-x:auto;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line);background:#fff;}
-    .nav-item{margin-bottom:0;white-space:nowrap;} .nav-item.logout{margin-top:0;} .nav-divider{display:none;}
+    .sidebar{width:100%;height:auto;position:static;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fff;}
+    .nav-item{margin-bottom:0;white-space:nowrap;flex-shrink:0;} .nav-item.logout{margin-top:0;} .nav-divider{display:none;}
     .main{padding:20px 16px 50px;}
+  }
+
+  /* SMALL MOBILE (480px and below) */
+  @media(max-width:480px){
+    .topbar{padding:10px 12px;gap:8px;}
+    .topbar-right{gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+    .clock{display:none;}
+    #sessionBadge{display:none !important;}
+    .user-chip .uname,.user-chip .urole{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .login-card{padding:32px 22px;}
+    .page-title{font-size:20px;}
+    .attendance-clock{padding:24px 14px;}
+    .attendance-clock .big-time{font-size:32px;}
+    .att-btn{min-width:0;flex:1;padding:14px 18px;}
+    .att-status-row{gap:18px;}
+    .card{padding:16px;}
+    .modal{padding:18px;border-radius:var(--radius-md);}
+    .modal-foot{flex-wrap:wrap;}
+    .modal-foot button{flex:1;min-width:100px;}
+    .filter-bar{gap:8px;}
+    .filter-bar select,.filter-bar input,.filter-bar .btn-filter{flex:1;min-width:120px;}
+    .filter-bar select,.filter-bar input,.form-group input,.form-group select,.form-group textarea,.field input,#adminNoteInput,#exportAttMonth,#exportLeaveStatus{font-size:16px;}
+  }
+
+  /* Touch target / accessibility floor */
+  .btn-sm{min-height:36px;padding:8px 14px;}
+  .att-btn,.btn-submit,.btn-primary,.btn-camera,.btn-filter{min-height:44px;}
+
+  /* Focus visibility for keyboard navigation */
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.nav-item:focus-visible,.tab-pill:focus-visible{
+    outline:2px solid var(--teal);outline-offset:2px;
+  }
+
+  /* Reduced motion */
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
   }
 </style>
 </head>
@@ -350,8 +398,10 @@
           <button class="btn-filter" onclick="loadRiwayat()">Tampilkan</button>
         </div>
         <div class="card">
+          <div class="table-scroll">
           <table><thead><tr><th>Tanggal</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Lokasi</th></tr></thead>
           <tbody id="riwayatBody"><tr><td colspan="5" class="empty-state">Memuat data...</td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -377,8 +427,10 @@
         <div class="page-title">Status Pengajuan</div>
         <div class="page-sub">Riwayat dan status persetujuan pengajuan Anda</div>
         <div class="card">
+          <div class="table-scroll">
           <table><thead><tr><th>Jenis</th><th>Mulai</th><th>Selesai</th><th>Alasan</th><th>Status</th><th>Catatan HR</th></tr></thead>
           <tbody id="statusBody"><tr><td colspan="6" class="empty-state">Memuat data...</td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -401,8 +453,10 @@
         </div>
         <div class="card">
           <div class="section-title">Kehadiran Hari Ini</div>
+          <div class="table-scroll">
           <table><thead><tr><th>Nama</th><th>Departemen</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Lokasi</th></tr></thead>
           <tbody id="adminTodayBody"><tr><td colspan="6" class="empty-state"><span class="loader dark"></span></td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -417,8 +471,10 @@
           <div class="tab-pill" data-status="all" onclick="setLeaveTab(this,'all')">Semua</div>
         </div>
         <div class="card">
+          <div class="table-scroll">
           <table><thead><tr><th>Karyawan</th><th>Departemen</th><th>Jenis</th><th>Mulai</th><th>Selesai</th><th>Alasan</th><th>Status</th><th>Aksi</th></tr></thead>
           <tbody id="adminLeavesBody"><tr><td colspan="8" class="empty-state"><span class="loader dark"></span></td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -431,8 +487,10 @@
           <button class="btn-filter" onclick="loadAdminAttendance()">Tampilkan</button>
         </div>
         <div class="card">
+          <div class="table-scroll">
           <table><thead><tr><th>Nama</th><th>Tanggal</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Lokasi</th></tr></thead>
           <tbody id="adminAttBody"><tr><td colspan="6" class="empty-state">Pilih bulan lalu klik Tampilkan</td></tr></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -446,7 +504,8 @@
             <input type="text" id="empSearchInput" placeholder="Cari nama / ID / departemen..." style="min-width:220px;" oninput="filterEmpTable()">
           </div>
         </div>
-        <div class="card" style="overflow-x:auto;">
+        <div class="card">
+          <div class="table-scroll">
           <table id="empTable">
             <thead><tr>
               <th>ID</th><th>Nama</th><th>Jabatan</th><th>Departemen</th>
@@ -454,6 +513,7 @@
             </tr></thead>
             <tbody id="empTableBody"><tr><td colspan="8" class="empty-state"><span class="loader dark"></span></td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
 
